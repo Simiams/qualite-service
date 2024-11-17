@@ -161,9 +161,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     loadShapes();
 
-
-
-
     // Charger le fichier GeoJSON et ajouter les arrêts à la carte
     fetch('stops_with_lines.geojson') // Remplacez par le chemin de votre fichier GeoJSON
         .then(response => response.json())
@@ -239,5 +236,6 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('filterTram').addEventListener('change', filterMarkers);
             document.getElementById('filterDisability').addEventListener('change', filterMarkers);
         })
+
         .catch(error => console.error("Erreur de chargement des données :", error));
     });

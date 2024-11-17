@@ -68,6 +68,11 @@
         .leaflet-popup-content {
             width: auto!important;
         }
+        .line {
+            width:20px;
+            border-radius: 5px!important;
+            height: 7px
+        }
     </style>
 </head>
 <body>
@@ -106,10 +111,10 @@
     <div class="legend" id="legend">
         <div class="legend-title">Légende</div>
         <div class="legend-item">
-            <span class="legend-color" style="background-color: blue;"></span> Exemple d'arrêt de Bus/Tram
+            <span class="legend-color stop" style="background-color: blue;"></span> Exemple d'arrêt de Bus/Tram
         </div>
         <div class="legend-item">
-            <span class="legend-color" style="background-color: green;"></span> Exemple de ligne de Tram
+            <span class="legend-color line" style="background-color: green;"></span> Exemple de ligne de Bus/Tram
         </div>
         <div style="margin-top: 8px; font-size: 12px;">
             Ces boutons vous permettent de voir distinctement les lignes de bus et de tram sur la ville de Nantes, en utilisant des données récupérées sur le site de 
