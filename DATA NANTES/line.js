@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
     async function loadShapes() {
-        console.log("heree")
         const shapesResponse = await fetch('gtfs-tan/shapes.txt');
         const tripsResponse = await fetch('gtfs-tan/trips.txt');
         const routesResponse = await fetch('gtfs-tan/routes.txt');

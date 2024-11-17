@@ -53,6 +53,21 @@
             border-radius: 50%;
             display: inline-block;
         }
+        .stop-image {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 12px;
+            margin-bottom: 10px
+        }
+        .metadata {
+            width: auto;
+            min-width:200px;
+            display:flex;
+            flex-direction: column;
+        }
+        .leaflet-popup-content {
+            width: auto!important;
+        }
     </style>
 </head>
 <body>
@@ -79,6 +94,11 @@
         <label>
             <input type="checkbox" id="filterTramLine">
             Afficher les lignes de Tram
+        </label>
+        <br>
+        <label>
+            <input type="checkbox" id="filterDisability" unchecked>
+            Masquer les arrêt sans acès handicapés
         </label>
     </div>
 

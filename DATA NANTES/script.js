@@ -1,4 +1,17 @@
 document.addEventListener("DOMContentLoaded", function() {
+    stopsInformation = []
+
+    fetch('arrets.geojson')
+        .then(response => response.json())
+        .then(data => {
+            data.features.forEach(d => {
+                stopsInformation.push({
+                    "stop_id": d.properties.stop_id,
+                    "wheelchair_boarding": d.properties.wheelchair_boarding
+                })
+            })
+        })
+
     // Initialiser la carte et la centrer sur Nantes
     const map = L.map('map').setView([47.218371, -1.553621], 13);
 
@@ -13,6 +26,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Générateur de couleurs pour les lignes individuelles
     const lineColors = {};
     const markers = [];  // Liste pour stocker les marqueurs ajoutés
+    const imagesDownloaded = ["BOFA1", "COMC1", "DCAN1", "IDNA2", "STPI1"]
 
     function generateRandomColor() {
         const letters = '0123456789ABCDEF';
@@ -27,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function filterMarkers() {
         const showBus = document.getElementById('filterBus').checked;
         const showTram = document.getElementById('filterTram').checked;
+        const showDisability = document.getElementById('filterDisability').checked;
 
         markers.forEach(marker => {
             const lines = marker.feature.properties.lines.split(', ').map(line => line.trim());
@@ -34,9 +49,13 @@ document.addEventListener("DOMContentLoaded", function() {
             const hasBus = lines.some(line => !tramLines.includes(line)); // Considère toutes les autres lignes comme bus
 
             if ((showBus && hasBus) || (showTram && hasTram)) {
-                marker.addTo(map); // Affiche le marqueur s'il correspond au filtre
+                const isDisabilityFriendly =  stopsInformation.find(stop => stop.stop_id === marker.feature.properties.stop_id)?.wheelchair_boarding === "1"
+                marker.addTo(map);
+                if (showDisability && !isDisabilityFriendly) {
+                    map.removeLayer(marker);
+                }
             } else {
-                map.removeLayer(marker); // Supprime le marqueur de la carte s'il ne correspond pas
+                map.removeLayer(marker);
             }
         });
     }
@@ -57,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function() {
         iconAnchor: [15, 15],
         popupAnchor: [0, -15]
     });
-    
+
     async function loadShapes() {
         const polylinesBus = L.layerGroup();
         const polyLinesTram = L.layerGroup();
@@ -112,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         // Tracer les lignes sur la carte
-        shapeMap.forEach((points, shapeId) => {                
+        shapeMap.forEach((points, shapeId) => {
             const routeId = tripToRoute.get(shapeId);
             if (routeId == '1-0' || routeId == '1B-0' || routeId == '2-0' || routeId == '2B-0' || routeId == '3-0' || routeId == '3B-0' || routeId == '4-0') {
                 const color = routeColors.get(routeId) || '#3388ff';
@@ -144,6 +163,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
+
     // Charger le fichier GeoJSON et ajouter les arrêts à la carte
     fetch('stops_with_lines.geojson') // Remplacez par le chemin de votre fichier GeoJSON
         .then(response => response.json())
@@ -152,10 +172,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 const latlng = feature.geometry.coordinates.reverse();
                 const lines = feature.properties.lines.split(', ').map(line => line.trim());
                 const stopName = feature.properties.stop_name || "Nom non disponible";
+                const stopId = feature.properties.stop_id || null;
+                const images =  imagesDownloaded.includes(stopId) ? `./stops-images/${stopId}.jpg` : null
+
 
                 // Informations sur l'accès handicapé
-                const wheelchairAccess = feature.properties.wheelchair_boarding === "1" ? "Oui" : "Non";
-                
+                const wheelchairAccess =  stopsInformation.find(stop => stop.stop_id === feature.properties.stop_id)?.wheelchair_boarding === "1" ? "Oui" : "Non";
+
                 // Indication de correspondance avec le tram
                 const tramLink = lines.some(line => tramLines.includes(line)) ? "Oui" : "Non";
 
@@ -181,10 +204,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 // Contenu du popup avec les métadonnées
                 const metadataContent = `
-                    <b>Arrêt :</b> ${stopName}<br>
-                    <b>Accès handicapé :</b> ${wheelchairAccess}<br>
-                    <b>Correspondances :</b> ${lines.join(', ')}<br>
-                    <b>Correspondance Tram :</b> ${tramLink}
+                    <div class="metadata">
+                        ${images ? `<img src="${images}" class="stop-image"/>` : ''}
+                        <span><b>Arrêt :</b> ${stopName}</span>
+                        <span><b>Accès handicapé :</b> ${wheelchairAccess}</span>
+                        <span><b>Correspondances :</b> ${lines.join(', ')}</span>
+                        <span><b>Correspondance Tram :</b> ${tramLink}</span>
+                        <span><b>ID :</b> ${stopId}</span>
+                    </div>
                 `;
 
                 // Afficher les métadonnées au passage de la souris
@@ -193,12 +220,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
 
                 // Afficher les métadonnées au clic droit
-                // marker.on('contextmenu', function(e) {
-                //     L.popup()
-                //         .setLatLng(e.latlng)
-                //         .setContent(metadataContent)
-                //         .openOn(map);
-                // });
+                marker.on('contextmenu', function(e) {
+                    L.popup()
+                        .setLatLng(e.latlng)
+                        .setContent(metadataContent)
+                        .openOn(map);
+                });
 
                 // Ajouter le marqueur à la carte
                 marker.addTo(map);
@@ -210,6 +237,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // Ajouter des écouteurs pour les cases à cocher de filtrage
             document.getElementById('filterBus').addEventListener('change', filterMarkers);
             document.getElementById('filterTram').addEventListener('change', filterMarkers);
+            document.getElementById('filterDisability').addEventListener('change', filterMarkers);
         })
         .catch(error => console.error("Erreur de chargement des données :", error));
     });
