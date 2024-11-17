@@ -41,10 +41,28 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    // Icône pour un bus
+    const busIcon = L.divIcon({
+        html: '<div class="bus-icon"><i class="fa-solid fa-bus"></i></div>',
+        className: '',
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+        popupAnchor: [0, -15]
+    });
+
+    const tramIcon = L.divIcon({
+        html: '<div class="bus-icon"><i class="fa-solid fa-tram"></i></div>',
+        className: '',
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+        popupAnchor: [0, -15]
+    });
+    
     async function loadShapes() {
-        console.log("heree")
-        const polylines = L.layerGroup();
-                const shapesResponse = await fetch('gtfs-tan/shapes.txt');
+        const polylinesBus = L.layerGroup();
+        const polyLinesTram = L.layerGroup();
+
+        const shapesResponse = await fetch('gtfs-tan/shapes.txt');
         const tripsResponse = await fetch('gtfs-tan/trips.txt');
         const routesResponse = await fetch('gtfs-tan/routes.txt');
 
@@ -94,17 +112,31 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         // Tracer les lignes sur la carte
-        shapeMap.forEach((points, shapeId) => {
+        shapeMap.forEach((points, shapeId) => {                
             const routeId = tripToRoute.get(shapeId);
-            const color = routeColors.get(routeId) || '#3388ff';
-            const polyline = L.polyline(points, { color: color, weight: 4 });
-            polylines.addLayer(polyline);
-        });
-        document.getElementById('toggleLines').addEventListener('click', () => {
-            if (map.hasLayer(polylines)) {
-                map.removeLayer(polylines);
+            if (routeId == '1-0' || routeId == '1B-0' || routeId == '2-0' || routeId == '2B-0' || routeId == '3-0' || routeId == '3B-0' || routeId == '4-0') {
+                const color = routeColors.get(routeId) || '#3388ff';
+                const polyline = L.polyline(points, { color: color, weight: 4 });
+                polyLinesTram.addLayer(polyline);
             } else {
-                map.addLayer(polylines);
+                const color = routeColors.get(routeId) || '#3388ff';
+                const polyline = L.polyline(points, { color: color, weight: 4 });
+                polylinesBus.addLayer(polyline);
+            }
+        });
+        document.getElementById('filterTramLine').addEventListener('change', () => {
+            if (map.hasLayer(polyLinesTram)) {
+                map.removeLayer(polyLinesTram);
+            } else {
+                map.addLayer(polyLinesTram);
+            }
+        });
+
+        document.getElementById('filterBusLine').addEventListener('change', () => {
+            if (map.hasLayer(polylinesBus)) {
+                map.removeLayer(polylinesBus);
+            } else {
+                map.addLayer(polylinesBus);
             }
         });
     }
@@ -161,12 +193,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
 
                 // Afficher les métadonnées au clic droit
-                marker.on('contextmenu', function(e) {
-                    L.popup()
-                        .setLatLng(e.latlng)
-                        .setContent(metadataContent)
-                        .openOn(map);
-                });
+                // marker.on('contextmenu', function(e) {
+                //     L.popup()
+                //         .setLatLng(e.latlng)
+                //         .setContent(metadataContent)
+                //         .openOn(map);
+                // });
 
                 // Ajouter le marqueur à la carte
                 marker.addTo(map);

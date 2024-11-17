@@ -7,6 +7,7 @@
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
     <!-- Style pour la carte et les éléments de contrôle -->
     <style>
@@ -62,24 +63,30 @@
     <div class="filter-container">
         <label>
             <input type="checkbox" id="filterBus" checked>
-            Afficher les lignes de Bus
+            Afficher les arrêts de Bus
         </label>
         <br>
         <label>
             <input type="checkbox" id="filterTram" checked>
+            Afficher les arrêts de Tram
+        </label>
+        <br>
+        <label>
+            <input type="checkbox" id="filterBusLine">
+            Afficher les lignes de Bus
+        </label>
+        <br>
+        <label>
+            <input type="checkbox" id="filterTramLine">
             Afficher les lignes de Tram
         </label>
-    </div>
-
-    <div id="controls">
-        <button id="toggleLines" class="btn">Afficher/Masquer les Lignes</button>
     </div>
 
     <!-- Légende -->
     <div class="legend" id="legend">
         <div class="legend-title">Légende</div>
         <div class="legend-item">
-            <span class="legend-color" style="background-color: blue;"></span> Exemple de ligne de Bus
+            <span class="legend-color" style="background-color: blue;"></span> Exemple d'arrêt de Bus/Tram
         </div>
         <div class="legend-item">
             <span class="legend-color" style="background-color: green;"></span> Exemple de ligne de Tram
