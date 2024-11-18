@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }).addTo(map);
 
     // Définir les lignes de tram explicitement
-    const tramLines = ["1", "2", "3", "4"];
+    const tramLines = ["1", "2", "3"];
 
     // Générateur de couleurs pour les lignes individuelles
     const lineColors = {};
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // Tracer les lignes sur la carte
         shapeMap.forEach((points, shapeId) => {
             const routeId = tripToRoute.get(shapeId);
-            if (routeId == '1-0' || routeId == '1B-0' || routeId == '2-0' || routeId == '2B-0' || routeId == '3-0' || routeId == '3B-0' || routeId == '4-0') {
+            if (routeId == '1-0' || routeId == '1B-0' || routeId == '2-0' || routeId == '2B-0' || routeId == '3-0' || routeId == '3B-0' ) {
                 const color = routeColors.get(routeId) || '#3388ff';
                 const polyline = L.polyline(points, { color: color, weight: 4 });
                 polyLinesTram.addLayer(polyline);
